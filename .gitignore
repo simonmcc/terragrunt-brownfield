@@ -1,1 +1,3 @@
 .terraform
+.terraform.lock.hcl
+.terragrunt-cache/
