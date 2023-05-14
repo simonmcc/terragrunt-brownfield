@@ -1,0 +1,13 @@
+# .terraform-docs.yml
+content: |-
+  {{ .Header }}
+
+  ## Example
+
+  ```hcl
+  {{ include "tests/terragrunt.hcl" }}
+  ```
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
