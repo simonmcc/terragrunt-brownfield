@@ -26,13 +26,14 @@ terraform {
 }
 
 locals {
-  unique_id = get_env("TT_UNIQUE_ID", "abcd")
-  rg_name   = "terratest-${local.unique_id}"
+  # load these from the environment so that the terratest test harness can set them
+  rg_name     = get_env("TT_RG_NAME", "terratest-abcd")
+  rg_location = get_env("TT_RG_LOCATION", "uksouth")
 }
 
 inputs = {
   resource_group_name = local.rg_name
-  location            = "uksouth"
+  location            = local.rg_location
 }
 ```
 
