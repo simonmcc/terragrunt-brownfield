@@ -46,7 +46,7 @@ func TestSkeleton(t *testing.T) {
 
 	// Run "terragrunt init" and "terragrunt apply". Fail the test if there are any errors.
 	// Unfortunatly terragrunt doesn't have an idempotent check option, we can't actually tell
-	// that terraform ran & detected no changes, but if the az cli created failed & the before_hook
+	// that terraform ran & detected no changes, but if the az cli create failed or the before_hook
 	// didn't import the resource group, we would have failed (can't create duplicate RGs)
 	terraform.TgApplyAll(t, terraformOptions)
 
