@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +16,11 @@ func TestSkeleton(t *testing.T) {
 	// truncated to 4 char and lowered so we don't bust Azure's 24 char limit
 	uniqueId := strings.ToLower(random.UniqueId()[:4])
 
-	os.Setenv("TT_UNIQUE_ID", uniqueId)
+	rg_name := "terratest-" + uniqueId
+	rg_location := "uksouth"
+
+	os.Setenv("TT_RG_NAME", rg_name)
+	os.Setenv("TT_RG_LOCATION", rg_location)
 
 	// Construct the terraform options with default retryable errors to handle the most common
 	// retryable errors in terraform testing.
@@ -28,16 +33,26 @@ func TestSkeleton(t *testing.T) {
 	// Clean up resources with "terragrunt destroy" at the end of the test.
 	defer terraform.TgDestroyAll(t, terraformOptions)
 
+	// Use the Azure CLI to create the resource that should be imported:
+	create_rg := shell.Command{
+		Command: "az",
+		Args: []string{"group",
+			"create",
+			"--location", rg_location,
+			"--name", rg_name,
+		},
+	}
+	shell.RunCommandAndGetOutput(t, create_rg)
+
 	// Run "terragrunt init" and "terragrunt apply". Fail the test if there are any errors.
+	// Unfortunatly terragrunt doesn't have an idempotent check option, we can't actually tell
+	// that terraform ran & detected no changes, but if the az cli created failed & the before_hook
+	// didn't import the resource group, we would have failed (can't create duplicate RGs)
 	terraform.TgApplyAll(t, terraformOptions)
 
-	// TODO: now remove the resource group from tfstate to verify clean import
-	// remove from tfstate
-	// run apply, terraform should report no-op as it's imported in the hook
-
 	// Run `terraform output` to get the values of output variables and check they have the expected values.
-	rg_name := terraform.Output(t, terraformOptions, "name")
+	output_rg_name := terraform.Output(t, terraformOptions, "name")
 
 	// Check resource group name
-	assert.Equal(t, rg_name, "terratest-"+uniqueId)
+	assert.Equal(t, output_rg_name, rg_name)
 }

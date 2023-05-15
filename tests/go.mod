@@ -1,4 +1,4 @@
-module azure/storage-account/legacy-storage-account
+module terragrunt-brownfield
 
 go 1.19
 

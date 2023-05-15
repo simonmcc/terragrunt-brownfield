@@ -5,11 +5,6 @@
 # errexit
 set -e
 
-LOG_LEVEL=${LOG_LEVEL:-info}
-DRY_RUN='true'
-# array of terraform import commands to import found resources
-CMDS=()
-
 log_debug() {
   if [[ "$LOG_LEVEL" == "debug" ]]; then
     # shellcheck disable=SC2154
@@ -79,7 +74,6 @@ check_packages() {
 
 # Check If script executing againest correct environment.
 environment_check() {
-  log_info "DRY_RUN: $DRY_RUN"
   log_info "RESOURCE_GROUP_NAME: $RESOURCE_GROUP_NAME"
 }
 
@@ -164,21 +158,22 @@ printimport() {
   fi
 }
 
-log_info Starting $0
+# global variables
+LOG_LEVEL=${LOG_LEVEL:-info}
+# array of terraform import commands to import found resources
+CMDS=()
 
-if [ "$1" == 'plan' ]; then
-  DRY_RUN='true'
-else
-  DRY_RUN='false'
-fi
+log_info Starting $0
+# TF_ACTION is plan or apply, and should be the first & only argument
+TF_ACTION=$1
 
 # Map TF_VAR_* inputs
-RESOURCE_GROUP_NAME=${TF_VAR_resource_group_name}
+RESOURCE_GROUP_NAME="${TF_VAR_resource_group_name}"
 
 check_packages
 setup_additional_variables
 check_resources
-if [[ "$DRY_RUN" == 'false' ]]; then
+if [[ "$TF_ACTION" == 'apply' ]]; then
   import
 else
   printimport
