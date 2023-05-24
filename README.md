@@ -42,11 +42,25 @@ inputs = {
 }
 ```
 
-# Testing
+## Testing
 
 > stop writing things you can't test
 
 This module includes a [terratest](https://terratest.gruntwork.io/) integration test, which creates a resource group & then runs `terragrunt` so that the hook will import the group, terraform will fail if the resource group wasn't imported (as you can't create a duplicate group). 
+
+## Development Workflow
+
+[Makefile](Makefile) contains targets for formatting, updating docs & running tests, installing requires tools and running the terratest integration test.
+
+* `make validate` terraform fmt, init, validate.
+* `make test` run terratest integration tests.
+* `make docs` update README.md via terraform-docs
+* `make clean` clean up all of the .terraform & .terragrunt caches
+* `make install_tools_macos` install required tools via [brew](https://brew.sh)
+
+## Future Work
+
+1. Demonstrate state migration (`terraform state rm` from one module, import into new module)
 
 <!-- BEGIN_TF_DOCS -->
 
