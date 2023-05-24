@@ -13,7 +13,7 @@ We've developed a pattern of brownfield-aware terraform modules that use terragr
 
 The `before_hook` script `import-resources-into-tfstate.sh` still requires intimate knowledge of the resources created by your module, but this technique allows you to automatically import into tfstate, particularly helpful when you're bulk migrating resources or have multiple environments that manually running `terraform import` becomes monotonous or error prone.
 
-Additionally, our implementation of the script supports `apply` and `plan` mode, in plan mode we report what would happen & an in apply mode we perform the imports. 
+Additionally, our implementation of the script supports `apply` and `plan` mode, in plan mode we report what would happen & an in apply mode we perform the imports.
 
 We run multiple production deployments from the same terraform code base, this runs automatically for us in our terragrunt pipeline, reducing the TOIL involved in migrations and state split operations. It also helps reduce TOIL & handoff when working in environments we don't have direct access to.
 
@@ -46,7 +46,7 @@ inputs = {
 
 > stop writing things you can't test
 
-This module includes a [terratest](https://terratest.gruntwork.io/) integration test, which creates a resource group & then runs `terragrunt` so that the hook will import the group, terraform will fail if the resource group wasn't imported (as you can't create a duplicate group). 
+This module includes a [terratest](https://terratest.gruntwork.io/) integration test, which creates a resource group & then runs `terragrunt` so that the hook will import the group, terraform will fail if the resource group wasn't imported (as you can't create a duplicate group).
 
 ## Development Workflow
 
